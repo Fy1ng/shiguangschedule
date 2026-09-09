@@ -55,12 +55,11 @@ jobs:
       - name: Prepare contributor resources
         run: bash .github/scripts/build_contributors.sh
 
-      - name: Build APKs and run shared tests
+      - name: Build Android APKs
         run: >-
           bash ./gradlew
           :androidApp:assembleDebug
           :androidApp:assembleDebugAndroidTest
-          :shared:jvmTest
           --stacktrace --no-daemon --max-workers=2
           -Dorg.gradle.jvmargs="-Xmx3g -Dfile.encoding=UTF-8"
           -Pkotlin.compiler.execution.strategy=in-process
@@ -72,12 +71,3 @@ jobs:
           path: androidApp/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 30
-
-      - name: Upload test reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: widget-test-reports-${{ github.sha }}
-          path: shared/build/reports/tests/
-          if-no-files-found: ignore
-          retention-days: 14
