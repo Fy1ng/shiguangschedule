@@ -66,6 +66,7 @@ import shiguangschedule.shared.generated.resources.desc_personalization
 import shiguangschedule.shared.generated.resources.desc_quick_actions
 import shiguangschedule.shared.generated.resources.desc_set_start_date
 import shiguangschedule.shared.generated.resources.desc_show_non_current_week
+import shiguangschedule.shared.generated.resources.desc_show_widget_course_time
 import shiguangschedule.shared.generated.resources.desc_show_weekends
 import shiguangschedule.shared.generated.resources.desc_time_slot_customization
 import shiguangschedule.shared.generated.resources.desc_total_weeks
@@ -81,6 +82,7 @@ import shiguangschedule.shared.generated.resources.item_personalization
 import shiguangschedule.shared.generated.resources.item_quick_actions
 import shiguangschedule.shared.generated.resources.item_set_start_date
 import shiguangschedule.shared.generated.resources.item_show_non_current_week
+import shiguangschedule.shared.generated.resources.item_show_widget_course_time
 import shiguangschedule.shared.generated.resources.item_show_weekends
 import shiguangschedule.shared.generated.resources.item_time_slot_customization
 import shiguangschedule.shared.generated.resources.item_total_weeks
@@ -170,6 +172,8 @@ fun SettingsScreen(
                         GeneralSettingsSection(
                             showNonCurrentWeek = appSettings.showNonCurrentWeekCourses,
                             onShowNonCurrentWeekChanged = { isChecked -> viewModel.onShowNonCurrentWeekChanged(isChecked) },
+                            showWidgetCourseTime = appSettings.showWidgetCourseTime,
+                            onShowWidgetCourseTimeChanged = viewModel::onShowWidgetCourseTimeChanged,
                             showWeekends = showWeekends,
                             onShowWeekendsChanged = { isChecked -> viewModel.onShowWeekendsChanged(isChecked) },
                             semesterStartDate = semesterStartDate,
@@ -251,6 +255,8 @@ fun SettingsScreen(
 private fun GeneralSettingsSection(
     showNonCurrentWeek: Boolean,
     onShowNonCurrentWeekChanged: (Boolean) -> Unit,
+    showWidgetCourseTime: Boolean,
+    onShowWidgetCourseTimeChanged: (Boolean) -> Unit,
     showWeekends: Boolean,
     onShowWeekendsChanged: (Boolean) -> Unit,
     semesterStartDate: LocalDate?,
@@ -282,6 +288,13 @@ private fun GeneralSettingsSection(
                 subtitle = stringResource(Res.string.desc_show_non_current_week)
             ) {
                 Switch(checked = showNonCurrentWeek, onCheckedChange = onShowNonCurrentWeekChanged)
+            }
+
+            SettingItem(
+                title = stringResource(Res.string.item_show_widget_course_time),
+                subtitle = stringResource(Res.string.desc_show_widget_course_time)
+            ) {
+                Switch(checked = showWidgetCourseTime, onCheckedChange = onShowWidgetCourseTimeChanged)
             }
 
             SettingItem(

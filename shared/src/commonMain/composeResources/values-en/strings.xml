@@ -571,4 +571,6 @@
     <string name="backup_target_webdav">WebDAV Cloud Sync</string>
     <string name="backup_target_local_zip">Local ZIP File</string>
 
+    <string name="item_show_widget_course_time">Show course times in home screen widgets</string>
+    <string name="desc_show_widget_course_time">Android home screen widgets only. Turn off to leave more space for course locations.</string>
 </resources>

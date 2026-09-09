@@ -101,6 +101,9 @@ data class AppSettingsModel(
     /** 是否显示非本周课程 */
     val showNonCurrentWeekCourses: Boolean = false,
 
+    /** Android 桌面小组件是否显示课程时间段 */
+    val showWidgetCourseTime: Boolean = true,
+
     /** 应用启动时显示的页面 */
     val startScreen: StartScreen = StartScreen.COURSE_SCHEDULE,
 
@@ -133,6 +136,7 @@ data class AppSettingsModel(
         val KEY_AUTO_CONTROL_MODE = stringPreferencesKey("auto_control_mode")
         val KEY_COMPAT_WEARABLE_SYNC = booleanPreferencesKey("compat_wearable_sync")
         val KEY_SHOW_NON_CURRENT_WEEK_COURSES = booleanPreferencesKey("show_non_current_week_courses")
+        val KEY_SHOW_WIDGET_COURSE_TIME = booleanPreferencesKey("show_widget_course_time")
         val KEY_START_SCREEN = stringPreferencesKey("start_screen")
         val KEY_THEME_MODE = stringPreferencesKey("theme_mode")
         val KEY_USE_DYNAMIC_COLOR = booleanPreferencesKey("use_dynamic_color")
@@ -154,6 +158,7 @@ data class AppSettingsModel(
                 autoControlMode = AutoControlMode.fromString(prefs[KEY_AUTO_CONTROL_MODE]),
                 compatWearableSync = prefs[KEY_COMPAT_WEARABLE_SYNC] ?: d.compatWearableSync,
                 showNonCurrentWeekCourses = prefs[KEY_SHOW_NON_CURRENT_WEEK_COURSES] ?: d.showNonCurrentWeekCourses,
+                showWidgetCourseTime = prefs[KEY_SHOW_WIDGET_COURSE_TIME] ?: d.showWidgetCourseTime,
                 startScreen = prefs[KEY_START_SCREEN]?.let { StartScreen.fromString(it) } ?: d.startScreen,
                 themeMode = prefs[KEY_THEME_MODE]?.let { AppThemeMode.fromString(it) } ?: d.themeMode,
                 useDynamicColor = prefs[KEY_USE_DYNAMIC_COLOR] ?: d.useDynamicColor,

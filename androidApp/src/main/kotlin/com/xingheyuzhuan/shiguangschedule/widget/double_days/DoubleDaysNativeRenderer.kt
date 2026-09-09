@@ -8,6 +8,7 @@ import android.widget.RemoteViews
 import com.xingheyuzhuan.shiguangschedule.MainActivity
 import com.xingheyuzhuan.shiguangschedule.R
 import com.xingheyuzhuan.shiguangschedule.widget.WidgetCourseProto
+import com.xingheyuzhuan.shiguangschedule.widget.bindCourseList
 import com.xingheyuzhuan.shiguangschedule.widget.WidgetSnapshot
 import java.time.LocalDate
 import java.time.LocalTime
@@ -16,7 +17,7 @@ import java.util.Locale
 
 object DoubleDaysNativeRenderer {
 
-    fun render(context: Context, snapshot: WidgetSnapshot): RemoteViews {
+    fun render(context: Context, snapshot: WidgetSnapshot, appWidgetId: Int): RemoteViews {
         val rv = RemoteViews(context.packageName, R.layout.widget_double_days_native)
 
         // 状态彻底重置
@@ -63,7 +64,7 @@ object DoubleDaysNativeRenderer {
             R.id.container_today, R.id.tv_today_date, R.id.tv_today_footer,
             R.id.empty_today_container,
             today, remainingToday, remainingToday.size,
-            true, snapshot
+            true, snapshot, appWidgetId
         )
 
         // 渲染右侧：明日
@@ -75,7 +76,7 @@ object DoubleDaysNativeRenderer {
             R.id.container_tomorrow, R.id.tv_tomorrow_date, R.id.tv_tomorrow_footer,
             R.id.empty_tomorrow_container,
             tomorrow, effectiveTomorrow, effectiveTomorrow.size,
-            false, snapshot
+            false, snapshot, appWidgetId
         )
 
         return rv
@@ -84,8 +85,6 @@ object DoubleDaysNativeRenderer {
     private fun resetWidgetState(rv: RemoteViews) {
         rv.setViewVisibility(R.id.inner_content_card, View.VISIBLE)
         rv.setViewVisibility(R.id.container_vacation, View.GONE)
-        rv.removeAllViews(R.id.container_today)
-        rv.removeAllViews(R.id.container_tomorrow)
         rv.setViewVisibility(R.id.empty_today_container, View.GONE)
         rv.setViewVisibility(R.id.empty_tomorrow_container, View.GONE)
     }
@@ -101,7 +100,8 @@ object DoubleDaysNativeRenderer {
         displayCourses: List<WidgetCourseProto>,
         totalCount: Int,
         isToday: Boolean,
-        snapshot: WidgetSnapshot
+        snapshot: WidgetSnapshot,
+        appWidgetId: Int
     ) {
         // 设置日期标题
         val prefix = if (isToday) {
@@ -127,41 +127,7 @@ object DoubleDaysNativeRenderer {
             val countRes = if (isToday) R.string.widget_course_remaining_count else R.string.widget_course_total_count
             rootRv.setTextViewText(footerId, context.getString(countRes, totalCount))
 
-            // 循环渲染所有课程
-            displayCourses.forEachIndexed { index, course ->
-                val itemRv = RemoteViews(context.packageName, R.layout.widget_item_course_common)
-                itemRv.setTextViewText(R.id.tv_course_name, course.name)
-                itemRv.setTextViewText(R.id.tv_course_position, course.position)
-
-                val timeRange = "${course.start_time.take(5)}-${course.end_time.take(5)}"
-                itemRv.setTextViewText(R.id.tv_course_time, timeRange)
-
-                if (course.teacher.isNotBlank()) {
-                    itemRv.setViewVisibility(R.id.tv_course_teacher, View.VISIBLE)
-                    itemRv.setTextViewText(R.id.tv_course_teacher, course.teacher)
-                } else {
-                    itemRv.setViewVisibility(R.id.tv_course_teacher, View.GONE)
-                }
-
-                val style = snapshot.style
-                val colorInt = course.color_int
-                if (style != null && colorInt < style.course_color_maps.size) {
-                    val colorPair = style.course_color_maps[colorInt]
-                    itemRv.setInt(R.id.course_indicator, "setColorFilter",
-                        colorPair.light_color.toInt()
-                    )
-                    itemRv.setInt(R.id.course_indicator_dark, "setColorFilter",
-                        colorPair.dark_color.toInt()
-                    )
-                }
-
-                rootRv.addView(containerId, itemRv)
-
-                // 无限显示逻辑：只要不是最后一项，就添加横向分割线
-                if (index < displayCourses.size - 1) {
-                    rootRv.addView(containerId, RemoteViews(context.packageName, R.layout.widget_divider_horizontal))
-                }
-            }
+            bindCourseList(context, rootRv, appWidgetId, containerId, displayCourses, snapshot)
         }
     }
 }

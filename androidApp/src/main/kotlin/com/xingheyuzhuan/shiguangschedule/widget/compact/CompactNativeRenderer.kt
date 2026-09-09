@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.RemoteViews
 import com.xingheyuzhuan.shiguangschedule.MainActivity
 import com.xingheyuzhuan.shiguangschedule.R
+import com.xingheyuzhuan.shiguangschedule.widget.bindCourseList
 import com.xingheyuzhuan.shiguangschedule.widget.WidgetSnapshot
 import com.xingheyuzhuan.shiguangschedule.widget.WidgetCourseProto
 import java.time.LocalDate
@@ -16,7 +17,7 @@ import java.util.Locale
 
 object CompactNativeRenderer {
 
-    fun render(context: Context, snapshot: WidgetSnapshot): RemoteViews {
+    fun render(context: Context, snapshot: WidgetSnapshot, appWidgetId: Int): RemoteViews {
         val rv = RemoteViews(context.packageName, R.layout.widget_today_compact_native)
 
         // 状态彻底重置
@@ -71,12 +72,12 @@ object CompactNativeRenderer {
         when {
             todayRemaining.isNotEmpty() -> {
                 // 状态 1：今日剩余
-                renderCourseContent(context, rv, todayRemaining, snapshot, false)
+                renderCourseContent(context, rv, todayRemaining, snapshot, false, appWidgetId)
             }
             tomorrowCourses.isNotEmpty() -> {
                 // 状态 2：明日预告
                 rv.setTextViewText(R.id.tv_header_title, context.getString(R.string.widget_tomorrow_course_preview))
-                renderCourseContent(context, rv, tomorrowCourses, snapshot, true)
+                renderCourseContent(context, rv, tomorrowCourses, snapshot, true, appWidgetId)
             }
             else -> {
                 // 状态 3：今明无课
@@ -102,49 +103,17 @@ object CompactNativeRenderer {
         rv.setViewVisibility(R.id.container_courses, View.GONE)
         rv.setViewVisibility(R.id.container_status, View.GONE)
         rv.setViewVisibility(R.id.tv_footer, View.GONE)
-        rv.removeAllViews(R.id.container_courses)
     }
 
     /**
      * 渲染具体的课程列表
      */
-    private fun renderCourseContent(context: Context, rv: RemoteViews, courses: List<WidgetCourseProto>, snapshot: WidgetSnapshot, isTomorrow: Boolean) {
+    private fun renderCourseContent(context: Context, rv: RemoteViews, courses: List<WidgetCourseProto>, snapshot: WidgetSnapshot, isTomorrow: Boolean, appWidgetId: Int) {
         rv.setViewVisibility(R.id.container_courses, View.VISIBLE)
         rv.setViewVisibility(R.id.container_status, View.GONE)
         rv.setViewVisibility(R.id.tv_footer, View.VISIBLE)
 
-        courses.forEachIndexed { index, course ->
-            val itemRv = RemoteViews(context.packageName, R.layout.widget_item_course_common)
-            itemRv.setTextViewText(R.id.tv_course_name, course.name)
-            itemRv.setTextViewText(R.id.tv_course_position, course.position)
-            itemRv.setTextViewText(R.id.tv_course_time, "${course.start_time.take(5)}-${course.end_time.take(5)}")
-
-            if (!(course.teacher.isBlank())) {
-                itemRv.setViewVisibility(R.id.tv_course_teacher, View.VISIBLE)
-                itemRv.setTextViewText(R.id.tv_course_teacher, course.teacher)
-            } else {
-                itemRv.setViewVisibility(R.id.tv_course_teacher, View.GONE)
-            }
-
-            // 颜色处理
-            val style = snapshot.style
-            val colorInt = course.color_int
-            if (style != null && colorInt < style.course_color_maps.size) {
-                val colorPair = style.course_color_maps[colorInt]
-                itemRv.setInt(R.id.course_indicator, "setColorFilter",
-                    colorPair.light_color.toInt()
-                )
-                itemRv.setInt(R.id.course_indicator_dark, "setColorFilter",
-                    colorPair.dark_color.toInt()
-                )
-            }
-
-            rv.addView(R.id.container_courses, itemRv)
-
-            if (index < courses.size - 1) {
-                rv.addView(R.id.container_courses, RemoteViews(context.packageName, R.layout.widget_divider_horizontal))
-            }
-        }
+        bindCourseList(context, rv, appWidgetId, R.id.container_courses, courses, snapshot)
 
         val footerRes = if (isTomorrow) R.string.widget_course_total_count else R.string.widget_course_remaining_count
         rv.setTextViewText(R.id.tv_footer, context.getString(footerRes, courses.size))

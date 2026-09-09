@@ -59,6 +59,7 @@ object TinyNativeRenderer {
 
             val timeText = "${nextCourse.start_time.take(5)} - ${nextCourse.end_time.take(5)}"
             rv.setTextViewText(R.id.tv_course_time, timeText)
+            rv.setViewVisibility(R.id.tv_course_time, if (snapshot.hide_course_time) View.GONE else View.VISIBLE)
             rv.setTextViewText(R.id.tv_course_position, nextCourse.position)
 
             // 剩余课程数统计 (基于原始列表索引)
