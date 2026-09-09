@@ -56,15 +56,17 @@
                 tools:text="第 18 周" />
         </LinearLayout>
 
-        <LinearLayout
+        <ListView
             android:id="@+id/container_courses"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_marginTop="8dp"
-            android:orientation="vertical">
-            <include layout="@layout/widget_item_course_common" />
-            <include layout="@layout/widget_item_course_common" />
-        </LinearLayout>
+            android:divider="@drawable/widget_list_divider"
+            android:dividerHeight="9dp"
+            android:scrollbars="vertical"
+            android:scrollbarStyle="insideOverlay"
+            tools:listitem="@layout/widget_item_course_common" />
 
     </LinearLayout>
 

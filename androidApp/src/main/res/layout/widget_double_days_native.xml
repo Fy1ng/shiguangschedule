@@ -24,7 +24,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:baselineAligned="false"
             android:orientation="horizontal">
 
@@ -68,14 +69,17 @@
                             tools:text="剩余 2 节" />
                     </LinearLayout>
 
-                    <LinearLayout
+                    <ListView
                         android:id="@+id/container_today"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
                         android:layout_marginTop="8dp"
-                        android:orientation="vertical">
-                        <include layout="@layout/widget_item_course_common" />
-                    </LinearLayout>
+                        android:divider="@drawable/widget_list_divider"
+                        android:dividerHeight="9dp"
+                        android:scrollbars="vertical"
+                        android:scrollbarStyle="insideOverlay"
+                        tools:listitem="@layout/widget_item_course_common" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -143,14 +147,17 @@
                             tools:text="共有 4 节" />
                     </LinearLayout>
 
-                    <LinearLayout
+                    <ListView
                         android:id="@+id/container_tomorrow"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
                         android:layout_marginTop="8dp"
-                        android:orientation="vertical">
-                        <include layout="@layout/widget_item_course_common" />
-                    </LinearLayout>
+                        android:divider="@drawable/widget_list_divider"
+                        android:dividerHeight="9dp"
+                        android:scrollbars="vertical"
+                        android:scrollbarStyle="insideOverlay"
+                        tools:listitem="@layout/widget_item_course_common" />
                 </LinearLayout>
 
                 <LinearLayout

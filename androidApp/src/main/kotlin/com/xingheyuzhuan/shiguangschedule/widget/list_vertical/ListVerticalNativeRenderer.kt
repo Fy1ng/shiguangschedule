@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.RemoteViews
 import com.xingheyuzhuan.shiguangschedule.MainActivity
 import com.xingheyuzhuan.shiguangschedule.R
+import com.xingheyuzhuan.shiguangschedule.widget.bindCourseList
 import com.xingheyuzhuan.shiguangschedule.widget.WidgetSnapshot
 import com.xingheyuzhuan.shiguangschedule.widget.WidgetCourseProto
 import java.time.LocalDate
@@ -14,7 +15,7 @@ import java.time.LocalTime
 
 object ListVerticalNativeRenderer {
 
-    fun render(context: Context, snapshot: WidgetSnapshot): RemoteViews {
+    fun render(context: Context, snapshot: WidgetSnapshot, appWidgetId: Int): RemoteViews {
         val rv = RemoteViews(context.packageName, R.layout.widget_list_vertical_native)
 
         resetWidgetState(rv)
@@ -62,12 +63,12 @@ object ListVerticalNativeRenderer {
                 val weekText = context.getString(R.string.title_current_week, currentWeek.toString())
                 rv.setTextViewText(R.id.tv_header_title, "$weekText  $dayOfWeekStr")
                 rv.setTextViewText(R.id.tv_header_count_summary, context.getString(R.string.widget_remaining_courses_format_today, todayRemaining.size))
-                renderCourseContent(context, rv, todayRemaining, snapshot)
+                renderCourseContent(context, rv, todayRemaining, snapshot, appWidgetId)
             }
             tomorrowCourses.isNotEmpty() -> {
                 rv.setTextViewText(R.id.tv_header_title, context.getString(R.string.widget_tomorrow_course_preview))
                 rv.setTextViewText(R.id.tv_header_count_summary, context.getString(R.string.widget_remaining_courses_format_tomorrow, tomorrowCourses.size))
-                renderCourseContent(context, rv, tomorrowCourses, snapshot)
+                renderCourseContent(context, rv, tomorrowCourses, snapshot, appWidgetId)
             }
             else -> {
                 val hasCoursesToday = allCourses.any { it.date == todayStr || it.date.isBlank() }
@@ -86,45 +87,12 @@ object ListVerticalNativeRenderer {
         rv.setViewVisibility(R.id.inner_content_card, View.VISIBLE)
         rv.setViewVisibility(R.id.container_courses, View.GONE)
         rv.setViewVisibility(R.id.container_status, View.GONE)
-        rv.removeAllViews(R.id.container_courses)
     }
 
-    private fun renderCourseContent(context: Context, rv: RemoteViews, courses: List<WidgetCourseProto>, snapshot: WidgetSnapshot) {
+    private fun renderCourseContent(context: Context, rv: RemoteViews, courses: List<WidgetCourseProto>, snapshot: WidgetSnapshot, appWidgetId: Int) {
         rv.setViewVisibility(R.id.container_courses, View.VISIBLE)
 
-        courses.forEachIndexed { index, course ->
-            val itemRv = RemoteViews(context.packageName, R.layout.widget_item_course_list_node)
-
-            itemRv.setTextViewText(R.id.tv_course_name, course.name)
-            itemRv.setTextViewText(R.id.tv_course_position, course.position)
-            itemRv.setTextViewText(R.id.tv_course_start_time, course.start_time.take(5))
-            itemRv.setTextViewText(R.id.tv_course_end_time, course.end_time.take(5))
-
-            if (course.teacher.isNotBlank()) {
-                itemRv.setViewVisibility(R.id.tv_course_teacher, View.VISIBLE)
-                itemRv.setTextViewText(R.id.tv_course_teacher, course.teacher)
-            } else {
-                itemRv.setViewVisibility(R.id.tv_course_teacher, View.GONE)
-            }
-
-            val style = snapshot.style
-            val colorInt = course.color_int
-            if (style != null && colorInt < style.course_color_maps.size) {
-                val colorPair = style.course_color_maps[colorInt]
-                itemRv.setInt(R.id.course_indicator, "setColorFilter",
-                    colorPair.light_color.toInt()
-                )
-                itemRv.setInt(R.id.course_indicator_dark, "setColorFilter",
-                    colorPair.dark_color.toInt()
-                )
-            }
-
-            rv.addView(R.id.container_courses, itemRv)
-
-            if (index < courses.size - 1) {
-                rv.addView(R.id.container_courses, RemoteViews(context.packageName, R.layout.widget_divider_horizontal))
-            }
-        }
+        bindCourseList(context, rv, appWidgetId, R.id.container_courses, courses, snapshot, verticalTime = true)
     }
 
     private fun showFullStatus(rv: RemoteViews, title: String, msg: String) {

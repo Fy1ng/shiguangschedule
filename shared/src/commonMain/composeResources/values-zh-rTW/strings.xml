@@ -571,4 +571,6 @@
     <string name="backup_target_webdav">WebDAV 雲端同步</string>
     <string name="backup_target_local_zip">本地 ZIP 檔案</string>
 
+    <string name="item_show_widget_course_time">桌面小工具顯示課程時段</string>
+    <string name="desc_show_widget_course_time">適用於 Android 桌面小工具，關閉後為課程地點留出更多空間</string>
 </resources>

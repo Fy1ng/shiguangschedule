@@ -4,10 +4,12 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.util.Log
+import android.widget.RemoteViews
 import androidx.datastore.core.DataStore
 import com.xingheyuzhuan.shiguangschedule.data.model.ScheduleGridStyle
 import com.xingheyuzhuan.shiguangschedule.data.model.schedule_style.ScheduleGridStyleProto
 import com.xingheyuzhuan.shiguangschedule.data.model.toProto
+import com.xingheyuzhuan.shiguangschedule.data.repository.AppSettingsRepository
 import com.xingheyuzhuan.shiguangschedule.data.repository.WidgetRepository
 import com.xingheyuzhuan.shiguangschedule.widget.compact.CompactNativeProvider
 import com.xingheyuzhuan.shiguangschedule.widget.compact.CompactNativeRenderer
@@ -29,6 +31,7 @@ import kotlin.time.Duration.Companion.seconds
 // 创建一个局部的注入代理中心，用于在全局顶层方法中安全提取注入实例
 private object WidgetDependencyContainer : KoinComponent {
     val repository: WidgetRepository by inject()
+    val appSettingsRepository: AppSettingsRepository by inject()
     val styleDataStore: DataStore<ScheduleGridStyleProto> by inject()
 }
 
@@ -82,13 +85,15 @@ suspend fun updateAllWidgets(context: Context) {
         val snapshot = WidgetSnapshot(
             current_week = currentWeek,
             style = finalStyleToSync,
-            courses = courseProtoList
+            courses = courseProtoList,
+            hide_course_time = !WidgetDependencyContainer.appSettingsRepository
+                .getAppSettingsOnce().showWidgetCourseTime
         )
 
         // 4. 定义所有原生尺寸的映射列表
         val appWidgetManager = AppWidgetManager.getInstance(context)
-        val nativeConfigs = listOf(
-            TinyNativeProvider::class.java to TinyNativeRenderer::render,
+        val nativeConfigs: List<Pair<Class<*>, (Context, WidgetSnapshot, Int) -> RemoteViews>> = listOf(
+            TinyNativeProvider::class.java to { context, snapshot, _ -> TinyNativeRenderer.render(context, snapshot) },
             CompactNativeProvider::class.java to CompactNativeRenderer::render,
             DoubleDaysNativeProvider::class.java to DoubleDaysNativeRenderer::render,
             ListVerticalNativeProvider::class.java to ListVerticalNativeRenderer::render
@@ -105,8 +110,10 @@ suspend fun updateAllWidgets(context: Context) {
                 }
 
                 try {
-                    val remoteViews = renderFunc(context, snapshot)
-                    appWidgetManager.updateAppWidget(componentName, remoteViews)
+                    ids.forEach { appWidgetId ->
+                        val remoteViews = renderFunc(context, snapshot, appWidgetId)
+                        appWidgetManager.updateAppWidget(appWidgetId, remoteViews)
+                    }
                     Log.d("WidgetUpdateHelper", "成功刷新规格 ${providerClass.simpleName}")
                 } catch (e: Exception) {
                     Log.e("WidgetUpdateHelper", "规格 ${providerClass.simpleName} 渲染失败", e)

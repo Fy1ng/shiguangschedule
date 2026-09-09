@@ -34,6 +34,11 @@
                 android:value="true" />
         </service>
 
+        <service
+            android:name="androidx.core.widget.RemoteViewsCompatService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

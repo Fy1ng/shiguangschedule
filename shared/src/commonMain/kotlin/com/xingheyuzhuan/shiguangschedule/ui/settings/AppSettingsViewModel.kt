@@ -92,6 +92,12 @@ class SettingsViewModel(
         }
     }
 
+    fun onShowWidgetCourseTimeChanged(show: Boolean) {
+        viewModelScope.launch {
+            appSettingsRepository.setShowWidgetCourseTime(show)
+        }
+    }
+
     /**
      * 更新周末显示
      */

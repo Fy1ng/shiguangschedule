@@ -37,31 +37,16 @@
                 tools:text="今日还有 3 节课" />
         </RelativeLayout>
 
-        <LinearLayout
+        <ListView
             android:id="@+id/container_courses"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            tools:visibility="visible">
-
-            <include layout="@layout/widget_item_course_list_node" />
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/widget_divider"
-                android:alpha="0.2" />
-
-            <include layout="@layout/widget_item_course_list_node" />
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/widget_divider"
-                android:alpha="0.2" />
-
-            <include layout="@layout/widget_item_course_list_node" />
-        </LinearLayout>
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:divider="@drawable/widget_list_divider"
+            android:dividerHeight="9dp"
+            android:scrollbars="vertical"
+            android:scrollbarStyle="insideOverlay"
+            tools:listitem="@layout/widget_item_course_list_node" />
 
         <LinearLayout
             android:id="@+id/container_status"
@@ -103,7 +88,6 @@
             android:id="@+id/tv_full_status_msg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:textColor="@color/widget_text_secondary"
             android:textSize="12dp"
             tools:text="期待新学期" />

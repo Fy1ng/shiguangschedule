@@ -24,6 +24,7 @@ datastore = "1.2.1"
 
 # Android 平台专属依赖
 coreKtx = "1.19.0"
+coreRemoteViews = "1.1.0"
 appcompat = "1.8.0"
 activityCompose = "1.13.0"
 work-runtime = "2.11.2"
@@ -69,6 +70,7 @@ kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinxCoroutines" }
 
 # Android 平台专属基础库
+androidx-core-remoteviews = { module = "androidx.core:core-remoteviews", version.ref = "coreRemoteViews" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }

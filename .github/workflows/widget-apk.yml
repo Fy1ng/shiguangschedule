@@ -1,0 +1,77 @@
+name: Build widget APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feat/widget-time-toggle-scroll
+
+permissions:
+  contents: read
+
+concurrency:
+  group: widget-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools platforms;android-37 build-tools;37.0.0'
+
+      - name: Prepare offline school resources
+        shell: bash
+        run: |
+          set -euo pipefail
+          widget_resources_tmp=$(mktemp -d)
+          trap 'rm -rf "$widget_resources_tmp"' EXIT
+          git clone --depth 1 --branch index-pb-release \
+            https://github.com/XingHeYuZhuan/shiguang_warehouse.git "$widget_resources_tmp/index"
+          git clone --depth 1 --filter=blob:none --sparse \
+            https://github.com/XingHeYuZhuan/shiguang_warehouse.git "$widget_resources_tmp/schools"
+          git -C "$widget_resources_tmp/schools" sparse-checkout set resources
+          mkdir -p shared/assets/offline_repo/index shared/assets/offline_repo/schools
+          cp "$widget_resources_tmp/index/school_index.pb" shared/assets/offline_repo/index/
+          cp -a "$widget_resources_tmp/schools/resources/." shared/assets/offline_repo/schools/resources/
+          find shared/assets/offline_repo/schools/resources -name adapters.yaml -type f -delete
+
+      - name: Prepare contributor resources
+        run: bash .github/scripts/build_contributors.sh
+
+      - name: Build APKs and run shared tests
+        run: >-
+          bash ./gradlew
+          :androidApp:assembleDebug
+          :androidApp:assembleDebugAndroidTest
+          :shared:jvmTest
+          --stacktrace --no-daemon --max-workers=2
+          -Dorg.gradle.jvmargs="-Xmx3g -Dfile.encoding=UTF-8"
+          -Pkotlin.compiler.execution.strategy=in-process
+
+      - name: Upload installable APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: shiguangschedule-widget-apk-${{ github.sha }}
+          path: androidApp/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: widget-test-reports-${{ github.sha }}
+          path: shared/build/reports/tests/
+          if-no-files-found: ignore
+          retention-days: 14
