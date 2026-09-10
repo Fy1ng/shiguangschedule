@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_config_title">Home screen widget settings</string>
+    <string name="widget_config_show_course_time">Show course times</string>
+    <string name="widget_config_show_course_time_desc">Choose whether this home screen widget displays the time range for each course.</string>
+</resources>

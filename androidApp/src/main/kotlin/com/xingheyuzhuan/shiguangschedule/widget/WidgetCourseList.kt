@@ -21,6 +21,7 @@ internal fun bindCourseList(
     snapshot: WidgetSnapshot,
     verticalTime: Boolean = false
 ) {
+    val showCourseTime = WidgetPreferences.showCourseTime(context, appWidgetId)
     val items = RemoteViewsCompat.RemoteCollectionItems.Builder()
         .setHasStableIds(true)
         .setViewTypeCount(1)
@@ -28,7 +29,10 @@ internal fun bindCourseList(
         val id = UUID.nameUUIDFromBytes(
             "${course.id}|${course.date}|${course.start_time}".toByteArray(Charsets.UTF_8)
         ).leastSignificantBits
-        items.addItem(id, renderCourseListItem(context, course, snapshot, verticalTime))
+        items.addItem(
+            id,
+            renderCourseListItem(context, course, snapshot, verticalTime, showCourseTime)
+        )
     }
     RemoteViewsCompat.setRemoteAdapter(context, views, appWidgetId, listId, items.build())
 
@@ -49,13 +53,14 @@ internal fun renderCourseListItem(
     context: Context,
     course: WidgetCourseProto,
     snapshot: WidgetSnapshot,
-    verticalTime: Boolean = false
+    verticalTime: Boolean,
+    showCourseTime: Boolean
 ): RemoteViews {
     val layout = if (verticalTime) R.layout.widget_item_course_list_node else R.layout.widget_item_course_common
     return RemoteViews(context.packageName, layout).apply {
         setTextViewText(R.id.tv_course_name, course.name)
         setTextViewText(R.id.tv_course_position, course.position)
-        val timeVisibility = if (snapshot.hide_course_time) View.GONE else View.VISIBLE
+        val timeVisibility = if (showCourseTime) View.VISIBLE else View.GONE
         if (verticalTime) {
             setTextViewText(R.id.tv_course_start_time, course.start_time.take(5))
             setTextViewText(R.id.tv_course_end_time, course.end_time.take(5))

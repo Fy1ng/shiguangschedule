@@ -3,6 +3,7 @@ package com.xingheyuzhuan.shiguangschedule.widget.list_vertical
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
+import com.xingheyuzhuan.shiguangschedule.widget.WidgetPreferences
 import com.xingheyuzhuan.shiguangschedule.widget.WorkManagerHelper
 import com.xingheyuzhuan.shiguangschedule.widget.updateAllWidgets
 import kotlinx.coroutines.MainScope
@@ -22,6 +23,11 @@ class ListVerticalNativeProvider : AppWidgetProvider() {
         scope.launch {
             updateAllWidgets(context)
         }
+    }
+
+    override fun onDeleted(context: Context, appWidgetIds: IntArray) {
+        appWidgetIds.forEach { WidgetPreferences.delete(context, it) }
+        super.onDeleted(context, appWidgetIds)
     }
 
     /**

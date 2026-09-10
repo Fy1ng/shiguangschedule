@@ -50,6 +50,16 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".widget.WidgetConfigActivity"
+            android:exported="true"
+            android:label="@string/widget_config_title"
+            android:theme="@style/Theme.shiguangschedule">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
         <receiver
             android:name=".service.CourseAlarmReceiver"
             android:enabled="true"
@@ -79,7 +89,6 @@
                 android:resource="@xml/shiguangschedule_compact_widget" />
         </receiver>
 
-
         <receiver
             android:name=".widget.double_days.DoubleDaysNativeProvider"
             android:label="@string/widget_name_double_days"
@@ -103,8 +112,6 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/shiguangschedule_list_vertical_widget" />
         </receiver>
-
-
 
         <provider
             android:name="androidx.startup.InitializationProvider"

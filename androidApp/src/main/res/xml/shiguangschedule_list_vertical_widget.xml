@@ -7,6 +7,8 @@
     android:minResizeHeight="70dp"
     android:updatePeriodMillis="1800000"
     android:resizeMode="vertical"
+    android:configure="com.xingheyuzhuan.shiguangschedule.widget.WidgetConfigActivity"
+    android:widgetFeatures="reconfigurable"
     android:widgetCategory="home_screen"
     android:previewImage="@drawable/widget_preview_list_vertical"
     android:targetCellWidth="4"

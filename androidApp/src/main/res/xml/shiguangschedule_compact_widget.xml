@@ -8,5 +8,7 @@
     android:initialLayout="@layout/widget_loading_placeholder"
     android:previewImage="@drawable/widget_preview_compact"
     android:resizeMode="horizontal|vertical"
+    android:configure="com.xingheyuzhuan.shiguangschedule.widget.WidgetConfigActivity"
+    android:widgetFeatures="reconfigurable"
     android:widgetCategory="home_screen">
 </appwidget-provider>

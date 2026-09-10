@@ -7,13 +7,14 @@ import android.view.View
 import android.widget.RemoteViews
 import com.xingheyuzhuan.shiguangschedule.MainActivity
 import com.xingheyuzhuan.shiguangschedule.R
+import com.xingheyuzhuan.shiguangschedule.widget.WidgetPreferences
 import com.xingheyuzhuan.shiguangschedule.widget.WidgetSnapshot
 import java.time.LocalDate
 import java.time.LocalTime
 
 object TinyNativeRenderer {
 
-    fun render(context: Context, snapshot: WidgetSnapshot): RemoteViews {
+    fun render(context: Context, snapshot: WidgetSnapshot, appWidgetId: Int): RemoteViews {
         val rv = RemoteViews(context.packageName, R.layout.widget_tiny_native)
 
         // 状态彻底重置
@@ -59,7 +60,10 @@ object TinyNativeRenderer {
 
             val timeText = "${nextCourse.start_time.take(5)} - ${nextCourse.end_time.take(5)}"
             rv.setTextViewText(R.id.tv_course_time, timeText)
-            rv.setViewVisibility(R.id.tv_course_time, if (snapshot.hide_course_time) View.GONE else View.VISIBLE)
+            rv.setViewVisibility(
+                R.id.tv_course_time,
+                if (WidgetPreferences.showCourseTime(context, appWidgetId)) View.VISIBLE else View.GONE
+            )
             rv.setTextViewText(R.id.tv_course_position, nextCourse.position)
 
             // 剩余课程数统计 (基于原始列表索引)

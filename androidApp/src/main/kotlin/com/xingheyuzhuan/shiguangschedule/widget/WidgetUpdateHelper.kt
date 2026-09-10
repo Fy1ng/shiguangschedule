@@ -9,7 +9,6 @@ import androidx.datastore.core.DataStore
 import com.xingheyuzhuan.shiguangschedule.data.model.ScheduleGridStyle
 import com.xingheyuzhuan.shiguangschedule.data.model.schedule_style.ScheduleGridStyleProto
 import com.xingheyuzhuan.shiguangschedule.data.model.toProto
-import com.xingheyuzhuan.shiguangschedule.data.repository.AppSettingsRepository
 import com.xingheyuzhuan.shiguangschedule.data.repository.WidgetRepository
 import com.xingheyuzhuan.shiguangschedule.widget.compact.CompactNativeProvider
 import com.xingheyuzhuan.shiguangschedule.widget.compact.CompactNativeRenderer
@@ -31,7 +30,6 @@ import kotlin.time.Duration.Companion.seconds
 // 创建一个局部的注入代理中心，用于在全局顶层方法中安全提取注入实例
 private object WidgetDependencyContainer : KoinComponent {
     val repository: WidgetRepository by inject()
-    val appSettingsRepository: AppSettingsRepository by inject()
     val styleDataStore: DataStore<ScheduleGridStyleProto> by inject()
 }
 
@@ -82,22 +80,16 @@ suspend fun updateAllWidgets(context: Context) {
             )
         }
 
-        val showWidgetCourseTime = withTimeoutOrNull(2.seconds) {
-            WidgetDependencyContainer.appSettingsRepository
-                .getAppSettingsOnce().showWidgetCourseTime
-        } ?: true
-
         val snapshot = WidgetSnapshot(
             current_week = currentWeek,
             style = finalStyleToSync,
-            courses = courseProtoList,
-            hide_course_time = !showWidgetCourseTime
+            courses = courseProtoList
         )
 
         // 4. 定义所有原生尺寸的映射列表
         val appWidgetManager = AppWidgetManager.getInstance(context)
         val nativeConfigs: List<Pair<Class<*>, (Context, WidgetSnapshot, Int) -> RemoteViews>> = listOf(
-            TinyNativeProvider::class.java to { context, snapshot, _ -> TinyNativeRenderer.render(context, snapshot) },
+            TinyNativeProvider::class.java to TinyNativeRenderer::render,
             CompactNativeProvider::class.java to CompactNativeRenderer::render,
             DoubleDaysNativeProvider::class.java to DoubleDaysNativeRenderer::render,
             ListVerticalNativeProvider::class.java to ListVerticalNativeRenderer::render

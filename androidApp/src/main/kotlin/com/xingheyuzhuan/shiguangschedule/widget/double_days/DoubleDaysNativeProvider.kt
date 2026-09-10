@@ -3,6 +3,7 @@ package com.xingheyuzhuan.shiguangschedule.widget.double_days
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
+import com.xingheyuzhuan.shiguangschedule.widget.WidgetPreferences
 import com.xingheyuzhuan.shiguangschedule.widget.WorkManagerHelper
 import com.xingheyuzhuan.shiguangschedule.widget.updateAllWidgets
 import kotlinx.coroutines.MainScope
@@ -19,11 +20,15 @@ class DoubleDaysNativeProvider : AppWidgetProvider() {
         }
     }
 
+    override fun onDeleted(context: Context, appWidgetIds: IntArray) {
+        appWidgetIds.forEach { WidgetPreferences.delete(context, it) }
+        super.onDeleted(context, appWidgetIds)
+    }
+
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
         // 启用更新计划任务表
         WorkManagerHelper.schedulePeriodicWork(context)
-
     }
 
     // 移除最后一个小组件时清除任务表
