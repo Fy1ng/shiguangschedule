@@ -82,12 +82,16 @@ suspend fun updateAllWidgets(context: Context) {
             )
         }
 
+        val showWidgetCourseTime = withTimeoutOrNull(2.seconds) {
+            WidgetDependencyContainer.appSettingsRepository
+                .getAppSettingsOnce().showWidgetCourseTime
+        } ?: true
+
         val snapshot = WidgetSnapshot(
             current_week = currentWeek,
             style = finalStyleToSync,
             courses = courseProtoList,
-            hide_course_time = !WidgetDependencyContainer.appSettingsRepository
-                .getAppSettingsOnce().showWidgetCourseTime
+            hide_course_time = !showWidgetCourseTime
         )
 
         // 4. 定义所有原生尺寸的映射列表
