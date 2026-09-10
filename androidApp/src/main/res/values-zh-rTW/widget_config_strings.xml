@@ -3,4 +3,5 @@
     <string name="widget_config_title">桌面小工具設定</string>
     <string name="widget_config_show_course_time">顯示課程時間</string>
     <string name="widget_config_show_course_time_desc">控制此桌面小工具是否顯示每門課程的時間區段。</string>
+    <string name="widget_config_confirm">確定</string>
 </resources>

@@ -36,6 +36,6 @@
         android:id="@+id/button_confirm_widget_config"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/action_confirm" />
+        android:text="@string/widget_config_confirm" />
 
 </LinearLayout>
