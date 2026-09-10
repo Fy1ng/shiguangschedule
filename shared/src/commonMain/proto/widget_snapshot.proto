@@ -23,9 +23,8 @@ message WidgetCourseProto {
 message WidgetSnapshot {
   repeated WidgetCourseProto courses = 1;
   int32 current_week = 2;
-
-  // A missing field preserves the previous behavior: show course times.
-  bool hide_course_time = 4;
-
   .com.xingheyuzhuan.shiguangschedule.data.model.ScheduleGridStyleProto style = 3;
+
+  // Defaults to false, preserving the previous behavior: show course times.
+  bool hide_course_time = 4;
 }
